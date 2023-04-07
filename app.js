@@ -1,49 +1,105 @@
 const express = require("express");
 const https = require("https");
 const bodyParser = require("body-parser");
+const ejs = require("ejs");
+const _ = require("lodash");
+const { Client } = require('pg')
+
 
 const app = express();
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.set('view engine', 'ejs');
 
-app.get("/CityWeather", function(req,res){
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(express.static("public"));
 
-  res.sendFile(__dirname + "/CityWeather.html");
+let query = "";
+let weatherDescription = "";
+let imageURL = "";
+let temp = "";
+
+const client = new Client({
+  user: 'mydb_ab3v_user',
+  host: 'dpg-cgnng2ou9tun42st144g-a.singapore-postgres.render.com',
+  database: 'mydb',
+  password: 'NszA3WUQwKvA9pA3Uu5cerIiylNL7Pkp',
+  port: 5432,
+})
+client.connect(function(err) {
+  console.log("Connected!");
+});
+
+app.get("/", function(req, res) {
+  let today = new Date();
+  let currentDay = today.getDay();
+  let options = {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  };
+  let today_date = today.toLocaleDateString("en-us", options);
+  res.render("index", {
+    td: today_date
+  });
+});
+
+app.get("/signup", function(req, res) {
+
+  res.render("signup");
+});
+
+app.get("/CityWeather", function(req, res) {
+
+  res.render("CityWeather", {
+    cn: "",
+    wd: "",
+    tp: "",
+    imgurl: ""
+  });
 
 });
 
-app.get("/", function(req,res){
-
-  res.sendFile(__dirname + "/index.html");
-
-});
-
-app.post("/CityWeather", function(req, res){
+app.post("/CityWeather", function(req, res) {
 
   console.log(req.body.cityName);
-  const query = req.body.cityName;
+  let query = req.body.cityName;
   const apiKey = "711f62e772f7f1b72652548fe2d39348";
-  const url = "https://api.openweathermap.org/data/2.5/weather?q=" + query +"&appid=" + apiKey + "&units=metric";
-  https.get(url, function(response){
+  const url = "https://api.openweathermap.org/data/2.5/weather?q=" + query + "&appid=" + apiKey + "&units=metric";
+  https.get(url, function(response) {
     console.log(response.statusCode);
-    response.on("data", function(data){
-      const weatherData = JSON.parse(data);
-      const temp = weatherData.main.temp;
-      const weatherDescription = weatherData.weather[0].description;
-      const icon = weatherData.weather[0].icon;
-      const imageURL = "http://openweathermap.org/img/wn/" + icon + "@2x.png";
+    response.on("data", function(data) {
+      let weatherData = JSON.parse(data);
+      temp = weatherData.main.temp;
+      weatherDescription = weatherData.weather[0].description;
+      let icon = weatherData.weather[0].icon;
+      imageURL = "http://openweathermap.org/img/wn/" + icon + "@2x.png";
       console.log(temp);
-      res.write("<p>The weather is currently " + weatherDescription + "<p>");
-      res.write("<h1>The temperature in " + query + " is " + temp + " degree celsius</h1>");
-      res.write("<img src=" + imageURL + ">");
-      res.send();
+      res.render("CityWeather", {
+        cn: query,
+        wd: weatherDescription,
+        tp: temp,
+        imgurl: imageURL
+      });
     });
   });
 });
 
+app.post("/signup", async(req, res)=> {
+  console.log(req.body.acnm);
+  console.log(req.body.pwd);
+  console.log(req.body.emad);
+
+  await client.query('INSERT INTO "accountList"."accountList" (account_name, password, email) VALUES ($1, $2, $3)', [req.body.acnm, req.body.pwd, req.body.emad]);
+  client.end();
+
+  res.redirect("/");
+});
 
 
-app.listen(process.env.PORT || 3000, function(){
-console.log("server is running on port 3000");
+
+app.listen(process.env.PORT || 3000, function() {
+  console.log("server is running on port 3000");
 
 });
