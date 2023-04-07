@@ -6,13 +6,19 @@ const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.get("/CityWeather", function(req,res){
+
+  res.sendFile(__dirname + "/CityWeather.html");
+
+});
+
 app.get("/", function(req,res){
 
   res.sendFile(__dirname + "/index.html");
 
 });
 
-app.post("/", function(req, res){
+app.post("/CityWeather", function(req, res){
 
   console.log(req.body.cityName);
   const query = req.body.cityName;
