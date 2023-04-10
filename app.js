@@ -102,13 +102,13 @@ app.post("/signup", async (req, res) => {
     console.log(err);
   });
 
-  const insertQuery = 'INSERT INTO "accountList"."accountList" (account_id, account_name, password, email) VALUES (3, $1, $2, $3)';
+  const insertQuery = `INSERT INTO "accountList"."accountList" (account_id, account_name, password, email) VALUES (3, $1, $2, $3)`;
 
   // define the data to be inserted
   const data = [acc_name, paswd, emlads];
 
   // execute the insert query using the pool
-  await client.query(insertQuery, data, (err, res) => {
+  client.query(insertQuery, data, (err, res) => {
     if (err) {
       console.error(err);
     } else {
@@ -116,7 +116,7 @@ app.post("/signup", async (req, res) => {
     };
   });
   // release the pool to free up resources
-  await client.end();
+  client.end();
 
 
   console.log("succeed");
