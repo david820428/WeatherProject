@@ -92,7 +92,7 @@ app.post("/signup", async (req, res) => {
 
   const client = new Client({
     user: 'mydb_ab3v_user',
-    host: 'dpg-cgnng2ou9tun42st144g-a.singapore-postgres.render.com',
+    host: 'dpg-cgnng2ou9tun42st144g-a',
     database: 'mydb_ab3v',
     password: 'NszA3WUQwKvA9pA3Uu5cerIiylNL7Pkp',
     port: 5432,
