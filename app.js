@@ -3,7 +3,9 @@ const https = require("https");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const _ = require("lodash");
-const { Client } = require('pg')
+const {
+  Client
+} = require('pg');
 
 
 const app = express();
@@ -20,16 +22,9 @@ let weatherDescription = "";
 let imageURL = "";
 let temp = "";
 
-const client = new Client({
-  user: 'mydb_ab3v_user',
-  host: 'dpg-cgnng2ou9tun42st144g-a.singapore-postgres.render.com',
-  database: 'mydb',
-  password: 'NszA3WUQwKvA9pA3Uu5cerIiylNL7Pkp',
-  port: 5432,
-})
-client.connect(function(err) {
-  console.log("Connected!");
-});
+
+
+
 
 app.get("/", function(req, res) {
   let today = new Date();
@@ -86,17 +81,48 @@ app.post("/CityWeather", function(req, res) {
   });
 });
 
-app.post("/signup", async(req, res)=> {
+app.post("/signup", async (req, res) => {
   console.log(req.body.acnm);
   console.log(req.body.pwd);
   console.log(req.body.emad);
 
-  await client.query('INSERT INTO "accountList"."accountList" (account_name, password, email) VALUES ($1, $2, $3)', [req.body.acnm, req.body.pwd, req.body.emad]);
-  client.end();
+  let acc_name = req.body.acnm;
+  let paswd = req.body.pwd;
+  let emlads = req.body.emad;
+
+  const client = new Client({
+    user: 'mydb_ab3v_user',
+    host: 'dpg-cgnng2ou9tun42st144g-a.singapore-postgres.render.com',
+    database: 'mydb_ab3v',
+    password: 'NszA3WUQwKvA9pA3Uu5cerIiylNL7Pkp',
+    port: 5432,
+    ssl: true
+  });
+  client.connect(function(err) {
+    console.log(err);
+  });
+
+  const insertQuery = 'INSERT INTO "accountList"."accountList" (account_id, account_name, password, email) VALUES (3, $1, $2, $3)';
+
+  // define the data to be inserted
+  const data = [acc_name, paswd, emlads];
+
+  // execute the insert query using the pool
+  await client.query(insertQuery, data, (err, res) => {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log(`Successfully inserted ${res.rowCount} row(s)`);
+    };
+  });
+  // release the pool to free up resources
+  await client.end();
+
+
+  console.log("succeed");
 
   res.redirect("/");
 });
-
 
 
 app.listen(process.env.PORT || 3000, function() {
