@@ -17,14 +17,14 @@
 
   <main class="form-signin w-100 m-auto">
     <h1>Today is <%= td %></h1>
-    <form>
+    <form action="/" method="post">
       <h1 class="h3 mb-3 fw-normal align-center">Please sign in</h1>
       <div class="form-floating">
-        <input type="email" class="form-control" id="floatingInput" placeholder="Account Name">
+        <input class="form-control" id="floatingInput" placeholder="Account Name", name="acnm">
         <label for="floatingInput">Account Name</label>
       </div>
       <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+        <input type="password" class="form-control" id="floatingPassword" placeholder="Password", name="pwd">
         <label for="floatingPassword">Password</label>
       </div>
 
