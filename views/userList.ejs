@@ -37,10 +37,10 @@
         <% for (let i=0; i<rs.length; i++) { %>
         <tr>
           <td><input type="radio" name="selected-row"></td>
-          <td scope="row" data-label="Account"><%= rs[i].id %></td>
-          <td data-label="Due Date"><%= rs[i].name %></td>
-          <td data-label="Amount"><%= rs[i].password %></td>
-          <td data-label="Period"><%= rs[i].email %></td>
+          <td scope="row" data-label="ID"><%= rs[i].id %></td>
+          <td data-label="Name"><%= rs[i].name %></td>
+          <td data-label="Password"><%= rs[i].password %></td>
+          <td data-label="Email"><%= rs[i].email %></td>
         </tr>
         <% } %>
         <tr>
